@@ -1056,7 +1056,7 @@
         // No previous conversation, show welcome message
         const welcomeMessage =
           window.shopChatConfig?.welcomeMessage ||
-          "👋 Hi there! How can I help you today?";
+          "👋 Привіт! Чим можу тобі допомогти сьогодні?";
         this.Message.add(
           welcomeMessage,
           "assistant",
