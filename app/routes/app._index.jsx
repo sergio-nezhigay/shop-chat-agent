@@ -13,8 +13,7 @@ import { TitleBar } from "@shopify/app-bridge-react";
 export default function Index() {
   return (
     <Page>
-      <TitleBar title="Shop chat agent reference app">
-      </TitleBar>
+      <TitleBar title="Shop chat agent reference app1"></TitleBar>
       <BlockStack gap="500">
         <Layout>
           <Layout.Section>
@@ -25,7 +24,9 @@ export default function Index() {
                     Congrats on creating a new Shopify app 🎉
                   </Text>
                   <Text variant="bodyMd" as="p">
-                    This is a reference app that adds a chat agent on your storefront, which is powered via claude and can connect shopify mcp platform.
+                    This is a reference app that adds a chat agent on your
+                    storefront, which is powered via claude and can connect
+                    shopify mcp platform.
                   </Text>
                 </BlockStack>
               </BlockStack>
