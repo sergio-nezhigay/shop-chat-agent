@@ -30,7 +30,6 @@
       </a>
     </div>
   </div>
-  <!-- Main button -->
   <div class="shop-chat-main-bubble" style="background-color: {{ block.settings.chat_bubble_color }}">
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -48,16 +47,13 @@
       <line x1="12" y1="16" x2="12" y2="16"></line>
     </svg>
   </div>
-  <!-- Your existing AI Chat Window -->
   <div class="shop-ai-chat-container">
     <div class="shop-ai-chat-window">
       <div class="shop-ai-chat-header">
         <div>{{ 'chat.title' | t }}</div>
         <button class="shop-ai-chat-close">✕</button>
       </div>
-
       <div class="shop-ai-chat-messages"></div>
-
       <div class="shop-ai-chat-input">
         <input type="text" placeholder="{{ 'chat.inputPlaceholder' | t }}">
         <button class="shop-ai-chat-send">
@@ -88,6 +84,23 @@
     welcomeMessage: {{ block.settings.welcome_message | json }}
   };
   window.shopId = {{ shop.id }};
+
+  console.log('[ShopChat Debug] Config:', window.shopChatConfig);
+  console.log('[ShopChat Debug] Shop ID:', window.shopId);
+
+  fetch('https://api.ipify.org?format=json')
+    .then(response => response.json())
+    .then(data => {
+      console.log('[ShopChat Debug] User IP:', data.ip);
+      if (data.ip !== '93.175.232.45') {
+        console.log('[ShopChat Debug] Hiding AI option for IP:', data.ip);
+        var aiOption = document.querySelector('.shop-chat-option.ai-option');
+        if (aiOption) aiOption.style.display = 'none';
+      }
+    })
+    .catch(err => {
+      console.warn('[ShopChat Debug] Failed to fetch IP:', err);
+    });
 </script>
 
 {% schema %}
