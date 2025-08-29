@@ -1,7 +1,7 @@
 {{ 'chat.css' | asset_url | stylesheet_tag }}
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-<div class="shop-chat-launcher">
+<div class="shop-chat-interface">
   <div class="shop-chat-options">
     <div class="shop-chat-option ai-option ">
       <button class=" shop-ai-chat-bubble" style="background-color: {{ block.settings.chat_bubble_color }}">
@@ -78,21 +78,6 @@
     welcomeMessage: {{ block.settings.welcome_message | json }}
   };
   window.shopId = {{ shop.id }};
-
-  document.addEventListener("DOMContentLoaded", () => {
-    const mainBubble = document.querySelector(".shop-chat-main-bubble");
-    const options = document.querySelector(".shop-chat-options");
-    const aiTrigger = document.querySelector(".shop-ai-chat-bubble");
-    const chatBubble = document.querySelector(".shop-ai-chat-container .shop-ai-chat-bubble");
-
-    mainBubble.addEventListener("click", () => {
-      options.classList.toggle("active");
-    });
-
-    aiTrigger.addEventListener("click", () => {
-      options.classList.remove("active");
-    });
-  });
 </script>
 
 {% schema %}

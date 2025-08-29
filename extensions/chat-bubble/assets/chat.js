@@ -46,6 +46,9 @@
         if (this.isMobile) {
           this.setupMobileViewport();
         }
+
+        // Add this line to set up the options toggle
+        this.setupChatBubbleOptions(container);
       },
 
       /**
@@ -234,6 +237,27 @@
         }
 
         this.scrollToBottom();
+      },
+
+      /**
+       * Setup chat bubble options toggle
+       * @param {HTMLElement} container - The main container element
+       */
+      setupChatBubbleOptions: function (container) {
+        const mainBubble = container.querySelector(".shop-chat-main-bubble");
+        const options = container.querySelector(".shop-chat-options");
+        const aiTrigger = container.querySelector(".shop-ai-chat-bubble");
+
+        if (mainBubble && options) {
+          mainBubble.addEventListener("click", () => {
+            options.classList.toggle("active");
+          });
+        }
+        if (aiTrigger && options) {
+          aiTrigger.addEventListener("click", () => {
+            options.classList.remove("active");
+          });
+        }
       },
     },
 
@@ -1038,7 +1062,7 @@
      */
     init: function () {
       // Initialize UI
-      const container = document.querySelector(".shop-chat-launcher");
+      const container = document.querySelector(".shop-chat-interface");
       if (!container) return;
 
       this.UI.init(container);
