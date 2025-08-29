@@ -29,7 +29,6 @@
   background: var(--primary);
   color: #fff;
   border: none;
-  border-radius: var(--radius-full);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -37,10 +36,9 @@
   box-shadow: var(--shadow);
   transition: background var(--transition), box-shadow var(--transition), transform var(--transition);
   outline: none;
-  font-weight: 500;
+  font-weight: 400;
   font-size: 16px;
-  min-width: 48px;
-  min-height: 48px;
+  min-width: 70px;
   padding: 0 20px;
   gap: 8px;
   text-decoration: none;
@@ -51,9 +49,8 @@
 .shop-chat-main-bubble:hover,
 .shop-chat-option button:hover,
 .shop-chat-option a:hover {
-  background: var(--primary-hover);
-  transform: translateY(-2px) scale(1.04);
-  box-shadow: 0 6px 20px rgba(80,70,228,0.13), 0 2px 8px rgba(0,0,0,0.09);
+ transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.15);
 }
 
 .shop-ai-chat-bubble:focus-visible,
@@ -94,34 +91,6 @@
   opacity: 1;
   visibility: visible;
   transform: translateY(0) rotate(0deg);
-}
-
-.shop-chat-option button,
-.shop-chat-option a {
-  font-size: 15px;
-  padding: 10px 22px;
-  border-radius: var(--radius-full);
-  background: var(--primary);
-  color: #fff;
-  box-shadow: var(--shadow);
-  border: none;
-  transition: background var(--transition), box-shadow var(--transition), transform var(--transition);
-}
-
-.shop-chat-option a {
-  background: #7360f2;
-}
-
-.shop-chat-option a:hover {
-  background: #5e4fd1;
-}
-
-.shop-chat-option.telegram-option a {
-  background: #229ED9;
-}
-
-.shop-chat-option.telegram-option a:hover {
-  background: #178bb7;
 }
 
 .shop-ai-chat-window {
@@ -671,12 +640,33 @@
 
 .shop-chat-option button,
 .shop-chat-option a {
-  color: white;
-  padding: 10px 14px;
-  border-radius: 20px;
-  font-size: 14px;
+  color: #333;
+  background-color: white;
+  padding: 12px 20px;
+  border-radius: 25px;
+  font-size: 16px;
+  line-height: 1.1;
   text-decoration: none;
   border: none;
   cursor: pointer;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+@media (max-width: 768px) {
+    .shop-chat-option button,
+    .shop-chat-option a {
+        padding: 10px 16px;
+    }
+}
+
+.shop-chat-option button.shop-viber-trigger,
+.shop-chat-option a.shop-viber-trigger {
+    border-left: 4px solid #7360f2;    /* Purple - Viber brand */
+}
+.shop-chat-option button.shop-telegram-trigger,
+.shop-chat-option a.shop-telegram-trigger {
+    border-left: 4px solid #0088cc;    /* Blue - Telegram brand */
+}
+.shop-chat-option button.shop-ai-chat-bubble,
+.shop-chat-option a.shop-ai-chat-bubble {
+    border-left: 4px solid #ff6b6b;    /* Coral red - matches main button */
 }
