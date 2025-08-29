@@ -1038,7 +1038,7 @@
      */
     init: function () {
       // Initialize UI
-      const container = document.querySelector(".shop-ai-chat-container");
+      const container = document.querySelector(".shop-chat-launcher");
       if (!container) return;
 
       this.UI.init(container);

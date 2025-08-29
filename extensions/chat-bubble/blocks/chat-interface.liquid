@@ -1,51 +1,72 @@
 {{ 'chat.css' | asset_url | stylesheet_tag }}
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-<div class="shop-ai-chat-container">
-  <div class="shop-ai-chat-bubble" style="background-color: {{ block.settings.chat_bubble_color }}">
+<div class="shop-chat-launcher">
+  <div class="shop-chat-options">
+    <div class="shop-chat-option ai-option ">
+      <button class=" shop-ai-chat-bubble" style="background-color: {{ block.settings.chat_bubble_color }}">
+        🤖 AI Chat
+      </button>
+    </div>
+
+    <div class="shop-chat-option viber-option">
+      <a
+        href="viber://chat?number=%2B380XXXXXXXXX"
+        target="_blank"
+        class="shop-viber-trigger"
+        style="background-color:#7360f2"
+      >
+        💬 Viber
+      </a>
+    </div>
+  </div>
+  <!-- Main button -->
+  <div class="shop-chat-main-bubble" style="background-color: {{ block.settings.chat_bubble_color }}">
     <svg
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 24 24"
-      width="24"
-      height="24"
+      width="26"
+      height="26"
       fill="none"
-      stroke="currentColor"
+      stroke="white"
       stroke-width="2"
       stroke-linecap="round"
       stroke-linejoin="round"
     >
-      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+      <circle cx="12" cy="12" r="10"></circle>
+      <line x1="12" y1="8" x2="12" y2="12"></line>
+      <line x1="12" y1="16" x2="12" y2="16"></line>
     </svg>
   </div>
+  <!-- Your existing AI Chat Window -->
+  <div class="shop-ai-chat-container">
+    <div class="shop-ai-chat-window">
+      <div class="shop-ai-chat-header">
+        <div>{{ 'chat.title' | t }}</div>
+        <button class="shop-ai-chat-close">✕</button>
+      </div>
 
-  <div class="shop-ai-chat-window">
-    <div class="shop-ai-chat-header">
-      <div>{{ 'chat.title' | t }}</div>
-      <button class="shop-ai-chat-close">✕</button>
-    </div>
+      <div class="shop-ai-chat-messages"></div>
 
-    <div class="shop-ai-chat-messages">
-      <!-- Messages will be added here by JavaScript -->
-    </div>
-
-    <div class="shop-ai-chat-input">
-      <input type="text" placeholder="{{ 'chat.inputPlaceholder' | t }}">
-      <button class="shop-ai-chat-send">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="16"
-          height="16"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        >
-          <line x1="22" y1="2" x2="11" y2="13"></line>
-          <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
-        </svg>
-      </button>
+      <div class="shop-ai-chat-input">
+        <input type="text" placeholder="{{ 'chat.inputPlaceholder' | t }}">
+        <button class="shop-ai-chat-send">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <line x1="22" y1="2" x2="11" y2="13"></line>
+            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+          </svg>
+        </button>
+      </div>
     </div>
   </div>
 </div>
@@ -57,17 +78,32 @@
     welcomeMessage: {{ block.settings.welcome_message | json }}
   };
   window.shopId = {{ shop.id }};
+
+  document.addEventListener("DOMContentLoaded", () => {
+    const mainBubble = document.querySelector(".shop-chat-main-bubble");
+    const options = document.querySelector(".shop-chat-options");
+    const aiTrigger = document.querySelector(".shop-ai-chat-bubble");
+    const chatBubble = document.querySelector(".shop-ai-chat-container .shop-ai-chat-bubble");
+
+    mainBubble.addEventListener("click", () => {
+      options.classList.toggle("active");
+    });
+
+    aiTrigger.addEventListener("click", () => {
+      options.classList.remove("active");
+    });
+  });
 </script>
 
 {% schema %}
 {
-  "name": "AI Chat Assistant",
+  "name": "AI + Viber Chat",
   "target": "body",
   "settings": [
     {
       "type": "color",
       "id": "chat_bubble_color",
-      "label": "Chat Bubble Color",
+      "label": "Main Button Color",
       "default": "#5046e4"
     },
     {
@@ -81,14 +117,8 @@
       "id": "system_prompt",
       "label": "System Prompt",
       "options": [
-        {
-          "value": "standardAssistant",
-          "label": "Standard Assistant"
-        },
-        {
-          "value": "enthusiasticAssistant",
-          "label": "Enthusiastic Assistant"
-        }
+        { "value": "standardAssistant", "label": "Standard Assistant" },
+        { "value": "enthusiasticAssistant", "label": "Enthusiastic Assistant" }
       ],
       "default": "standardAssistant"
     }
