@@ -3,6 +3,7 @@
     "title": "Store Assistant",
     "inputPlaceholder": "Type your message here...",
     "sendButton": "Send",
-    "closeButton": "Close"
+    "closeButton": "Close",
+    "toggle_label": "Toggle chat menu"
   }
 }

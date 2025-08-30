@@ -3,6 +3,7 @@
     "title": "Помічник магазину",
     "inputPlaceholder": "Введіть ваше повідомлення тут...",
     "sendButton": "Надіслати",
-    "closeButton": "Закрити"
+    "closeButton": "Закрити",
+    "toggle_label": "Переключити меню чату"
   }
 }
