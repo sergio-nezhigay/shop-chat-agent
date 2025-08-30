@@ -50,6 +50,7 @@
   transition: all var(--transition);
   margin-left: auto;
   border: none;
+  font-size: 2.5rem;
 }
 
 .shop-chat-main-bubble:hover {

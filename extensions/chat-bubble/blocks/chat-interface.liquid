@@ -31,20 +31,7 @@
     id="chatToggle"
     aria-label="{{ 'chat.toggle_label' | t | default: 'Toggle chat menu' }}"
   >
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      stroke-width="2"
-      stroke-linecap="round"
-      stroke-linejoin="round"
-    >
-      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-      <circle cx="9" cy="10" r="1"/>
-      <circle cx="15" cy="10" r="1"/>
-      <path d="M9.5 14a3.5 3.5 0 0 0 5 0"/>
-    </svg>
+    💬
   </button>
   <div class="shop-ai-chat-container">
     <div class="shop-ai-chat-window">
@@ -89,7 +76,7 @@
 
   fetch('https://api.ipify.org?format=json')
     .then(response => response.json())
-    .then(data => {
+    .then data => {
       console.log('[ShopChat Debug] User IP:', data.ip);
       if (data.ip !== '93.175.232.45') {
         console.log('[ShopChat Debug] Hiding AI option for IP:', data.ip);
