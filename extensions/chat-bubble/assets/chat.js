@@ -249,15 +249,39 @@
         const aiTrigger = container.querySelector(".shop-ai-chat-bubble");
 
         if (mainBubble && options) {
-          mainBubble.addEventListener("click", () => {
+          mainBubble.addEventListener("click", (e) => {
+            e.stopPropagation(); // Prevent event bubbling
             options.classList.toggle("active");
           });
         }
+
         if (aiTrigger && options) {
-          aiTrigger.addEventListener("click", () => {
+          aiTrigger.addEventListener("click", (e) => {
+            e.stopPropagation(); // Prevent event bubbling
             options.classList.remove("active");
           });
         }
+
+        // Close options when clicking outside
+        document.addEventListener("click", (e) => {
+          if (options && options.classList.contains("active")) {
+            // Check if click is outside the chat interface
+            if (!container.contains(e.target)) {
+              options.classList.remove("active");
+            }
+          }
+        });
+
+        // Close options on Escape key
+        document.addEventListener("keydown", (e) => {
+          if (
+            e.key === "Escape" &&
+            options &&
+            options.classList.contains("active")
+          ) {
+            options.classList.remove("active");
+          }
+        });
       },
     },
 
@@ -1033,7 +1057,7 @@
         // Add add-to-cart button
         const button = document.createElement("button");
         button.classList.add("shop-ai-add-to-cart");
-        button.textContent = "Add to Cart";
+        button.textContent = "Додати в корзину";
         button.dataset.productId = product.id;
 
         // Add click handler for the button

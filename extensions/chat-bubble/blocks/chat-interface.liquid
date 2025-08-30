@@ -9,7 +9,7 @@
 
     <div class="shop-chat-option viber-option">
       <a
-        href="viber://chat?number=%2B380XXXXXXXXX"
+        href="viber://chat?number=+380507025777"
         target="_blank"
         class="shop-viber-trigger"
       >
@@ -18,7 +18,7 @@
     </div>
     <div class="shop-chat-option telegram-option">
       <a
-        href="https://t.me/your_telegram_bot"
+        href="https://t.me/NSergiy"
         target="_blank"
         class="shop-telegram-trigger"
       >
@@ -26,23 +26,26 @@
       </a>
     </div>
   </div>
-  <div class="shop-chat-main-bubble" style="background-color: {{ block.settings.chat_bubble_color }}">
+  <button
+    class="shop-chat-main-bubble"
+    id="chatToggle"
+    aria-label="{{ 'chat.toggle_label' | t | default: 'Toggle chat menu' }}"
+  >
     <svg
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 24 24"
-      width="26"
-      height="26"
       fill="none"
-      stroke="white"
+      stroke="currentColor"
       stroke-width="2"
       stroke-linecap="round"
       stroke-linejoin="round"
     >
-      <circle cx="12" cy="12" r="10"></circle>
-      <line x1="12" y1="8" x2="12" y2="12"></line>
-      <line x1="12" y1="16" x2="12" y2="16"></line>
+      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+      <circle cx="9" cy="10" r="1"/>
+      <circle cx="15" cy="10" r="1"/>
+      <path d="M9.5 14a3.5 3.5 0 0 0 5 0"/>
     </svg>
-  </div>
+  </button>
   <div class="shop-ai-chat-container">
     <div class="shop-ai-chat-window">
       <div class="shop-ai-chat-header">
@@ -104,12 +107,6 @@
   "name": "AI + Viber Chat",
   "target": "body",
   "settings": [
-    {
-      "type": "color",
-      "id": "chat_bubble_color",
-      "label": "Main Button Color",
-      "default": "#5046e4"
-    },
     {
       "type": "text",
       "id": "welcome_message",
