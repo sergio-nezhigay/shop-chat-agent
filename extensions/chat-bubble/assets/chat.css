@@ -448,6 +448,9 @@
   .shop-ai-message {
     max-width: 90%;
   }
+  .shop-ai-message a {
+    text-decoration: underline;
+  }
 
   .shop-ai-product-grid {
     flex-direction: column;

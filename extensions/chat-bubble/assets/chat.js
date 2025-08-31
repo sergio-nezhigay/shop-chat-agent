@@ -302,13 +302,10 @@
         const userMessage = chatInput.value.trim();
         const conversationId = sessionStorage.getItem("shopAiConversationId");
 
-        // Add user message to chat
         this.add(userMessage, "user", messagesContainer);
 
-        // Clear input
         chatInput.value = "";
 
-        // Show typing indicator
         ShopAIChat.UI.showTypingIndicator();
 
         try {
@@ -321,7 +318,8 @@
           console.error("Error communicating with Claude API:", error);
           ShopAIChat.UI.removeTypingIndicator();
           this.add(
-            "Sorry, I couldn't process your request at the moment. Please try again later.",
+            window.shopChatConfig?.i18n?.errorGeneric ||
+              "Sorry, I couldn't process your request. Please try again later.",
             "assistant",
             messagesContainer,
           );
@@ -464,10 +462,15 @@
             }
             // If it's a checkout link, replace the text
             else if (url.includes("/cart") || url.includes("checkout")) {
+              const checkoutText =
+                window.shopChatConfig?.i18n?.checkoutLink ||
+                "Click here to proceed to checkout";
               return (
                 '<a href="' +
                 url +
-                '" target="_blank" rel="noopener noreferrer">click here to proceed to checkout</a>'
+                '" target="_blank" rel="noopener noreferrer">' +
+                checkoutText +
+                "</a>"
               );
             } else {
               // For normal links, preserve the original text
@@ -654,7 +657,8 @@
           console.error("Error in streaming:", error);
           ShopAIChat.UI.removeTypingIndicator();
           ShopAIChat.Message.add(
-            "Sorry, I couldn't process your request. Please try again later.",
+            window.shopChatConfig?.i18n?.errorGeneric ||
+              "Sorry, I couldn't process your request. Please try again later.",
             "assistant",
             messagesContainer,
           );
@@ -708,6 +712,7 @@
             console.error("Stream error:", data.error);
             ShopAIChat.UI.removeTypingIndicator();
             currentMessageElement.textContent =
+              window.shopChatConfig?.i18n?.errorGeneric ||
               "Sorry, I couldn't process your request. Please try again later.";
             break;
 
@@ -715,6 +720,7 @@
             console.error("Rate limit exceeded:", data.error);
             ShopAIChat.UI.removeTypingIndicator();
             currentMessageElement.textContent =
+              window.shopChatConfig?.i18n?.errorBusy ||
               "Sorry, our servers are currently busy. Please try again later.";
             break;
 
