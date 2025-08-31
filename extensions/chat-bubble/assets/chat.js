@@ -216,7 +216,9 @@
         // Add a header for the product results
         const header = document.createElement("div");
         header.classList.add("shop-ai-product-header");
-        header.innerHTML = "<h4>Top Matching Products</h4>";
+        const headerText =
+          window.shopChatConfig?.i18n?.topProducts || "Top Matching Products";
+        header.innerHTML = `<h4>${headerText}</h4>`;
         productSection.appendChild(header);
 
         // Create the product grid container
@@ -226,7 +228,9 @@
 
         if (!products || !Array.isArray(products) || products.length === 0) {
           const noProductsMessage = document.createElement("p");
-          noProductsMessage.textContent = "No products found";
+          const noProductsText =
+            window.shopChatConfig?.i18n?.noProducts || "No products found";
+          noProductsMessage.textContent = noProductsText;
           noProductsMessage.style.padding = "10px";
           productsContainer.appendChild(noProductsMessage);
         } else {
@@ -586,9 +590,14 @@
             (location.hostname === "localhost"
               ? "https://localhost:3458/chat"
               : "https://shop-chat-agent-lively-fog-4926.fly.dev/chat");
-          const shopId = window.shopId;
-          console.log("streamUrl", JSON.stringify(streamUrl, null, 2));
-          console.log("shopId", JSON.stringify(shopId, null, 2));
+
+          // Fix: Define shopId from config or fallback
+          const shopId = window.shopChatConfig?.shopId || "";
+
+          // Fix: Use streamUrl as base for historyUrl
+          const historyUrl = streamUrl;
+          const fullHistoryUrl = `${historyUrl}?history=true&conversation_id=${encodeURIComponent(conversationId)}`;
+          console.log("Fetching history from:", fullHistoryUrl);
 
           const response = await fetch(streamUrl, {
             method: "POST",
@@ -762,10 +771,15 @@
           messagesContainer.appendChild(loadingMessage);
 
           // Fetch history from the server
-          const historyUrl = `https://localhost:3458/chat?history=true&conversation_id=${encodeURIComponent(conversationId)}`;
-          console.log("Fetching history from:", historyUrl);
+          const historyUrl =
+            window.shopChatConfig?.apiUrl ||
+            (location.hostname === "localhost"
+              ? "https://localhost:3458/chat"
+              : "https://shop-chat-agent-lively-fog-4926.fly.dev/chat");
+          const fullHistoryUrl = `${historyUrl}?history=true&conversation_id=${encodeURIComponent(conversationId)}`;
+          console.log("Fetching history from:", fullHistoryUrl);
 
-          const response = await fetch(historyUrl, {
+          const response = await fetch(fullHistoryUrl, {
             method: "GET",
             headers: {
               Accept: "application/json",
