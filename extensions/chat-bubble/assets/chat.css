@@ -411,6 +411,10 @@
   transform: scale(1.02);
 }
 
+.shop-ai-message a {
+  text-decoration: underline;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .shop-chat-interface {
@@ -447,9 +451,6 @@
 
   .shop-ai-message {
     max-width: 90%;
-  }
-  .shop-ai-message a {
-    text-decoration: underline;
   }
 
   .shop-ai-product-grid {
