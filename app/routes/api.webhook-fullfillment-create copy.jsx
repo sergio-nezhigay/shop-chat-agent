@@ -1,13 +1,19 @@
 // Environment variables needed:
 // SHOPIFY_SHOP_DOMAIN - your shop domain (e.g., "myshop.myshopify.com")
 // SHOPIFY_ACCESS_TOKEN - your private app access token
+//This route processes incoming Shopify webhooks for fulfillment creation, logging key data and optionally fetching shop info via Admin API.
+// * Part of the shop-chat-agent app (a Remix-based Shopify app for AI-powered storefront chat, per #codebase CLAUDE.md and README.md).
+
+//api.webhook-fullfillment-create.jsx route
 
 export async function action({ request }) {
-  const body = await request.text();
+  const webhookPayload = await request.text();
+  console.log("webhookPayload", JSON.stringify(webhookPayload, null, 2));
   let fulfillmentData;
 
   try {
-    fulfillmentData = JSON.parse(body);
+    fulfillmentData = JSON.parse(webhookPayload);
+    console.log("fulfillmentData", JSON.stringify(fulfillmentData, null, 2));
   } catch (error) {
     return new Response(JSON.stringify({ error: "Invalid JSON body" }), {
       status: 400,
@@ -16,35 +22,43 @@ export async function action({ request }) {
   }
 
   await processFulfillmentWebhook(fulfillmentData);
+  return new Response(
+    JSON.stringify({
+      success: true,
+    }),
+    {
+      status: 200,
+    },
+  );
 
   // Admin API usage: fetch shop info and order details
-  try {
-    await fetchShopInfo();
+  //  try {
+  //    await fetchShopInfo();
 
-    return new Response(
-      JSON.stringify({
-        success: true,
-        fulfillment_id: fulfillmentData.id,
-      }),
-      {
-        status: 200,
-        headers: getCorsHeaders(request),
-      },
-    );
-  } catch (error) {
-    console.error("Admin API error:", error);
-    return new Response(
-      JSON.stringify({
-        success: true,
-        fulfillment_processed: true,
-        admin_api_error: error.message,
-      }),
-      {
-        status: 200,
-        headers: getCorsHeaders(request),
-      },
-    );
-  }
+  //    return new Response(
+  //      JSON.stringify({
+  //        success: true,
+  //        fulfillment_id: fulfillmentData.id,
+  //      }),
+  //      {
+  //        status: 200,
+  //        headers: getCorsHeaders(request),
+  //      },
+  //    );
+  //  } catch (error) {
+  //    console.error("Admin API error:", error);
+  //    return new Response(
+  //      JSON.stringify({
+  //        success: true,
+  //        fulfillment_processed: true,
+  //        admin_api_error: error.message,
+  //      }),
+  //      {
+  //        status: 200,
+  //        headers: getCorsHeaders(request),
+  //      },
+  //    );
+  //  }
 }
 
 async function processFulfillmentWebhook(data) {
@@ -81,9 +95,9 @@ async function fetchShopInfo() {
     );
   }
 
-  const data = await response.json();
-  console.log("data", JSON.stringify(data, null, 2));
-  return data.shop;
+  const fetchedShopData = await response.json();
+  console.log("fetchedShopData", JSON.stringify(fetchedShopData, null, 2));
+  return fetchedShopData.shop;
 }
 
 function getCorsHeaders(request) {
