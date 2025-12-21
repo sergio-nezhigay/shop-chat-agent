@@ -1,0 +1,24 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(fly apps:*)",
+      "Bash(npx prisma studio)",
+      "Bash(fly ssh:*)",
+      "Bash(fly orgs:*)",
+      "Bash(fly auth whoami:*)",
+      "Bash(fly auth logout:*)",
+      "Bash(fly auth login:*)",
+      "Bash(curl:*)",
+      "Bash(npm run build:*)",
+      "Bash(fly deploy:*)",
+      "Bash(fly logs:*)",
+      "Bash(fly status:*)",
+      "Bash(python:*)",
+      "Bash(fly secrets set:*)",
+      "Bash(fly machine restart:*)",
+      "Bash(cat:*)",
+      "Bash(fly secrets unset:*)",
+      "Bash(fly machine start:*)"
+    ]
+  }
+}
