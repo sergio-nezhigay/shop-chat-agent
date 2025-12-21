@@ -229,7 +229,8 @@ async function handleChatSession({
             const toolArgs = content.input;
             const toolUseId = content.id;
 
-            const toolUseMessage = `Calling tool: ${toolName} with arguments: ${JSON.stringify(toolArgs)}`;
+            const toolUseMessage = `Уточнюю інформацію...`;
+            //const toolUseMessage = `Calling tool: ${toolName} with arguments: ${JSON.stringify(toolArgs)}`;
 
             stream.sendMessage({
               type: 'tool_use',

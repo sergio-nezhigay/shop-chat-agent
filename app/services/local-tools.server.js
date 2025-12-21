@@ -50,18 +50,17 @@ export async function executeLocalTool(toolName, toolArgs) {
 function getStoreInfo(args) {
   const storeData = {
     hours: {
-      weekdays: "9:00 AM - 6:00 PM",
+      weekdays: "10:00 AM - 6:00 PM",
       weekends: "10:00 AM - 4:00 PM",
-      timezone: "EST"
+      timezone: "EET"
     },
     contact: {
-      email: "support@shop.example.com",
-      phone: "+1-555-0123",
+      email: "info@informatica.com.ua",
+      phone: "+380(99) 381-5288",
       chat: "Available 24/7"
     },
     shipping: {
-      domestic: "Free shipping on orders over $50",
-      international: "Starting at $15",
+      domestic: "Delivery based on Nova Poshta pricing",
       processing_time: "1-2 business days"
     }
   };

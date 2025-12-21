@@ -18,7 +18,10 @@
       "Bash(fly machine restart:*)",
       "Bash(cat:*)",
       "Bash(fly secrets unset:*)",
-      "Bash(fly machine start:*)"
+      "Bash(fly machine start:*)",
+      "Bash(npx tsc:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)"
     ]
   }
 }
