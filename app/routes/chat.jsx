@@ -9,6 +9,7 @@ import AppConfig from "../services/config.server";
 import { createSseStream } from "../services/streaming.server";
 import { createClaudeService } from "../services/claude.server";
 import { createToolService } from "../services/tool.server";
+import { localTools, executeLocalTool } from "../services/local-tools.server";
 import { unauthenticated } from "../shopify.server";
 
 
@@ -153,11 +154,15 @@ async function handleChatSession({
       storefrontMcpTools = await mcpClient.connectToStorefrontServer();
       customerMcpTools = await mcpClient.connectToCustomerServer();
 
-      console.log(`Connected to MCP with ${storefrontMcpTools.length} tools`);
-      console.log(`Connected to customer MCP with ${customerMcpTools.length} tools`);
+      console.log(`Connected to MCP with ${storefrontMcpTools.length} storefront tools`);
+      console.log(`Connected to customer MCP with ${customerMcpTools.length} customer tools`);
     } catch (error) {
       console.warn('Failed to connect to MCP servers, continuing without tools:', error.message);
     }
+
+    // Add local tools to the available tools
+    mcpClient.tools = [...mcpClient.tools, ...localTools];
+    console.log(`Added ${localTools.length} local tools. Total tools: ${mcpClient.tools.length}`);
 
     // Prepare conversation state
     let conversationHistory = [];
@@ -231,8 +236,18 @@ async function handleChatSession({
               tool_use_message: toolUseMessage
             });
 
-            // Call the tool
-            const toolUseResponse = await mcpClient.callTool(toolName, toolArgs);
+            // Check if it's a local tool
+            const isLocalTool = localTools.some(tool => tool.name === toolName);
+
+            // Call the appropriate tool
+            let toolUseResponse;
+            if (isLocalTool) {
+              console.log(`Executing local tool: ${toolName}`);
+              toolUseResponse = await executeLocalTool(toolName, toolArgs);
+            } else {
+              console.log(`Calling MCP tool: ${toolName}`);
+              toolUseResponse = await mcpClient.callTool(toolName, toolArgs);
+            }
 
             // Handle tool response based on success/error
             if (toolUseResponse.error) {
