@@ -81,14 +81,14 @@
 }
 
 .shop-chat-main-bubble:hover {
-  background: var(--main-bubble-hover);
+  background: #e6ad00;
   color: var(--main-bubble-text);
-  transform: translateY(-2px) scale(1.05);
+  transform: scale(1.08);
 }
 
 .shop-chat-main-bubble:active {
-  transform: translateY(0) scale(0.98);
-  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.15);
+  background: #cc9a00;
+  transform: scale(0.95);
 }
 
 .shop-chat-main-bubble svg {
