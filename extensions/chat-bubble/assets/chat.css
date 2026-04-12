@@ -24,9 +24,9 @@
   --radius-full: 50px;
   --radius-pill: 22px;
   --transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  --main-bubble-bg: var(--warning);
+  --main-bubble-bg: #FFC220;
   --main-bubble-hover: #b45309;
-  --main-bubble-text: var(--text);
+  --main-bubble-text: #7A5800;
   --dynamic-vh: 80vh;
 }
 
@@ -61,7 +61,23 @@
   transition: all var(--transition);
   margin-left: auto;
   border: none;
-  font-size: 2.5rem;
+  font-size: 0;
+  position: relative;
+}
+
+.shop-chat-main-bubble::after {
+  content: '';
+  width: 26px;
+  height: 26px;
+  background-color: var(--main-bubble-text);
+  mask-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>');
+  mask-size: contain;
+  mask-repeat: no-repeat;
+  mask-position: center;
+  -webkit-mask-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>');
+  -webkit-mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
 }
 
 .shop-chat-main-bubble:hover {
