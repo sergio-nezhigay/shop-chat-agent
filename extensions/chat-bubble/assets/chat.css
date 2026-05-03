@@ -24,9 +24,9 @@
   --radius-full: 50px;
   --radius-pill: 22px;
   --transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  --main-bubble-bg: #FFC220;
-  --main-bubble-hover: #b45309;
-  --main-bubble-text: #7A5800;
+  --main-bubble-bg: #0071DC;
+  --main-bubble-hover: #005AB8;
+  --main-bubble-text: #FFFFFF;
   --dynamic-vh: 80vh;
 }
 
@@ -81,13 +81,13 @@
 }
 
 .shop-chat-main-bubble:hover {
-  background: #e6ad00;
+  background: var(--main-bubble-hover);
   color: var(--main-bubble-text);
   transform: scale(1.08);
 }
 
 .shop-chat-main-bubble:active {
-  background: #cc9a00;
+  background: #004a98;
   transform: scale(0.95);
 }
 
