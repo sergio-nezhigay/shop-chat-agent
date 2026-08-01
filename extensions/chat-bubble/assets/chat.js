@@ -906,7 +906,13 @@
 
         const root = window.Shopify?.routes?.root || "/";
         const items = actions.map((action) => ({
-          id: Number(action.variant_id),
+          // variant_id may arrive as a plain numeric id (from the backend's
+          // add_to_cart tool) or as a GID like
+          // "gid://shopify/ProductVariant/123" (from a product card, which
+          // gets it straight from search_catalog). Shopify GIDs encode the
+          // same numeric id as their trailing path segment, so this is safe
+          // for either shape.
+          id: Number(String(action.variant_id).split("/").pop()),
           quantity: action.quantity || 1,
         }));
 
