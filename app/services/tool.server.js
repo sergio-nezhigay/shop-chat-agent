@@ -38,8 +38,9 @@ export function createToolService() {
    * @param {Array} conversationHistory - The conversation history
    * @param {Array} productsToDisplay - Array to add product results to
    * @param {string} conversationId - The conversation ID
+   * @param {Array} cartActionsToDisplay - Array to add real-cart write instructions to
    */
-  const handleToolSuccess = async (toolUseResponse, toolName, toolUseId, conversationHistory, productsToDisplay, conversationId) => {
+  const handleToolSuccess = async (toolUseResponse, toolName, toolUseId, conversationHistory, productsToDisplay, conversationId, cartActionsToDisplay = []) => {
     let contentForHistory = toolUseResponse.content;
 
     // Check if this is a product search result
@@ -51,6 +52,12 @@ export function createToolService() {
       // actually present in the raw response, so it never has to convert
       // minor-unit amounts itself.
       contentForHistory = appendPriceSummaryBlock(toolUseResponse.content, allFormattedProducts);
+    }
+
+    // add_to_cart doesn't write to Shopify itself; it hands back a variant/quantity
+    // pair the client must submit to the storefront's real AJAX Cart API.
+    if (toolName === "add_to_cart" && toolUseResponse.cart_action) {
+      cartActionsToDisplay.push(toolUseResponse.cart_action);
     }
 
     addToolResultToHistory(conversationHistory, toolUseId, contentForHistory, conversationId);
@@ -143,7 +150,8 @@ export function createToolService() {
       description: (typeof product.description === 'string'
         ? product.description
         : product.description?.html) || '',
-      url: product.url || ''
+      url: product.url || '',
+      variant_id: product.variants?.[0]?.id || null
     };
   };
 

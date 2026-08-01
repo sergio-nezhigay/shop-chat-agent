@@ -167,6 +167,7 @@ async function handleChatSession({
     // Prepare conversation state
     let conversationHistory = [];
     let productsToDisplay = [];
+    let cartActionsToDisplay = [];
 
     // Save user message to the database
     await saveMessage(conversationId, 'user', userMessage);
@@ -273,7 +274,8 @@ async function handleChatSession({
                 toolUseId,
                 conversationHistory,
                 productsToDisplay,
-                conversationId
+                conversationId,
+                cartActionsToDisplay
               );
             }
 
@@ -302,6 +304,15 @@ async function handleChatSession({
       stream.sendMessage({
         type: 'product_results',
         products: productsToDisplay
+      });
+    }
+
+    // Tell the client to write any resolved add-to-cart actions to the
+    // shopper's real storefront cart (the backend never writes it directly)
+    if (cartActionsToDisplay.length > 0) {
+      stream.sendMessage({
+        type: 'cart_add',
+        actions: cartActionsToDisplay
       });
     }
   } catch (error) {

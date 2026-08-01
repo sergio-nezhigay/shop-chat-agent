@@ -99,7 +99,14 @@ class MCPClient {
 
       // Extract tools from the JSON-RPC response format
       const toolsData = response.result && response.result.tools ? response.result.tools : [];
-      const storefrontTools = this._formatToolsData(toolsData);
+      // update_cart/get_cart operate on a cart that's disconnected from the
+      // shopper's real browser session cart (no cookies are forwarded to
+      // this server-to-server MCP call). Advertising them lets Claude call
+      // them intermittently and silently "add" items nowhere the shopper can
+      // see. The real add-to-cart path is the local add_to_cart tool.
+      const DISCONNECTED_CART_TOOLS = new Set(["update_cart", "get_cart"]);
+      const storefrontTools = this._formatToolsData(toolsData)
+        .filter((tool) => !DISCONNECTED_CART_TOOLS.has(tool.name));
 
       this.storefrontTools = storefrontTools;
       this.tools = [...this.tools, ...storefrontTools];

@@ -744,6 +744,10 @@
             ShopAIChat.UI.displayProductResults(data.products);
             break;
 
+          case "cart_add":
+            ShopAIChat.Cart.handleCartAdd(data.actions, messagesContainer);
+            break;
+
           case "tool_use":
             if (data.tool_use_message) {
               ShopAIChat.Message.addToolUse(
@@ -883,6 +887,143 @@
           // Clear the conversation ID since we couldn't fetch this conversation
           sessionStorage.removeItem("shopAiConversationId");
         }
+      },
+    },
+
+    /**
+     * Writes chat-driven add-to-cart actions to the shopper's real storefront
+     * cart via Shopify's AJAX Cart API, then refreshes the visible cart icon.
+     * The backend never writes to Shopify's cart directly — see add_to_cart
+     * local tool — so this is the only place the real cart is mutated.
+     */
+    Cart: {
+      /**
+       * @param {Array<{variant_id: string, quantity: number}>} actions
+       * @param {HTMLElement} messagesContainer
+       */
+      handleCartAdd: async function (actions, messagesContainer) {
+        if (!Array.isArray(actions) || actions.length === 0) return;
+
+        const root = window.Shopify?.routes?.root || "/";
+        const items = actions.map((action) => ({
+          id: Number(action.variant_id),
+          quantity: action.quantity || 1,
+        }));
+
+        try {
+          const response = await fetch(root + "cart/add.js", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Accept: "application/json",
+            },
+            body: JSON.stringify({ items }),
+          });
+
+          const result = await response.json();
+
+          if (!response.ok) {
+            console.error("Failed to add item to cart:", result);
+            ShopAIChat.Message.add(
+              result.description ||
+                window.shopChatConfig?.i18n?.cartAddError ||
+                "Не вдалося додати товар у кошик. Спробуйте ще раз.",
+              "assistant",
+              messagesContainer,
+            );
+            return;
+          }
+
+          await this.refreshCartIcon();
+        } catch (error) {
+          console.error("Error adding to real cart:", error);
+        }
+      },
+
+      /**
+       * Refreshes the theme's cart icon badge and cart drawer contents via
+       * Shopify's Section Rendering API, mirroring how Dawn's own add-to-cart
+       * flow keeps them in sync. Only swaps text/inner content of known
+       * pieces (not whole elements) so it doesn't disturb this store's
+       * customized header/drawer markup or detach Dawn's <cart-drawer>
+       * custom element instance. Falls back to a best-effort /cart.js-based
+       * badge update if section rendering doesn't return usable markup.
+       */
+      refreshCartIcon: async function () {
+        const root = window.Shopify?.routes?.root || "/";
+
+        try {
+          const response = await fetch(
+            root + "?sections=cart-icon-bubble,cart-drawer",
+          );
+          if (response.ok) {
+            const data = await response.json();
+            const badgeUpdated = this.applyCartIconBadge(data["cart-icon-bubble"]);
+            const drawerUpdated = this.applyCartDrawer(data["cart-drawer"]);
+            if (badgeUpdated || drawerUpdated) return;
+          }
+        } catch (error) {
+          console.error("Cart section refresh failed, falling back:", error);
+        }
+
+        try {
+          const cart = await (await fetch(root + "cart.js")).json();
+          document
+            .querySelectorAll(
+              ".header-cart__badge, .cart-count-bubble, [data-cart-count], .cart-count",
+            )
+            .forEach((el) => {
+              el.textContent = cart.item_count;
+            });
+        } catch (error) {
+          console.error("Fallback cart count refresh failed:", error);
+        }
+      },
+
+      /**
+       * @param {string} html - Rendered cart-icon-bubble section markup
+       * @returns {boolean} Whether the live badge was updated
+       */
+      applyCartIconBadge: function (html) {
+        if (!html) return false;
+        const temp = document.createElement("div");
+        temp.innerHTML = html;
+        const newBadge = temp.querySelector(".header-cart__badge");
+        const liveBadges = document.querySelectorAll(".header-cart__badge");
+        if (!newBadge || liveBadges.length === 0) return false;
+        liveBadges.forEach((el) => {
+          el.textContent = newBadge.textContent;
+        });
+        return true;
+      },
+
+      /**
+       * Syncs Dawn's <cart-drawer> the same way its own cart.js does: swap
+       * .drawer__inner's content and toggle the is-empty class on the outer
+       * custom element, leaving the element instance itself in place.
+       * @param {string} html - Rendered cart-drawer section markup
+       * @returns {boolean} Whether the live drawer was updated
+       */
+      applyCartDrawer: function (html) {
+        if (!html) return false;
+        const temp = document.createElement("div");
+        temp.innerHTML = html;
+
+        const sourceDrawer = temp.querySelector("cart-drawer");
+        const sourceInner = sourceDrawer?.querySelector(".drawer__inner");
+        const targetDrawer = document.querySelector("cart-drawer");
+        const targetInner = targetDrawer?.querySelector(".drawer__inner");
+
+        if (!sourceDrawer || !sourceInner || !targetDrawer || !targetInner) {
+          return false;
+        }
+
+        targetDrawer.classList.toggle(
+          "is-empty",
+          sourceDrawer.classList.contains("is-empty"),
+        );
+        targetInner.innerHTML = sourceInner.innerHTML;
+        return true;
       },
     },
 
@@ -1088,16 +1229,25 @@
         // Add add-to-cart button
         const button = document.createElement("button");
         button.classList.add("shop-ai-add-to-cart");
-        button.textContent = "Додати в корзину";
+        button.textContent =
+          window.shopChatConfig?.i18n?.addToCart || "Додати в корзину";
         button.dataset.productId = product.id;
 
         // Add click handler for the button
         button.addEventListener("click", function () {
-          // Send message to add this product to cart
+          if (product.variant_id) {
+            // Write directly to the real storefront cart, no LLM round-trip needed
+            ShopAIChat.Cart.handleCartAdd(
+              [{ variant_id: product.variant_id, quantity: 1 }],
+              ShopAIChat.UI.elements.messagesContainer,
+            );
+            return;
+          }
+
+          // Fallback: no variant id resolved, let the assistant handle it
           const input = document.querySelector(".shop-ai-chat-input input");
           if (input) {
             input.value = `Add ${product.title} to my cart`;
-            // Trigger a click on the send button
             const sendButton = document.querySelector(".shop-ai-chat-send");
             if (sendButton) {
               sendButton.click();
