@@ -141,6 +141,12 @@ class MCPClient {
     try {
       console.log("Calling storefront tool", toolName, toolArgs);
 
+      // The UCP search_catalog tool requires its arguments nested under a
+      // "catalog" object (e.g. { catalog: { query: "..." } }), not flat.
+      const requestArgs = toolName === "search_catalog" && !toolArgs?.catalog
+        ? { catalog: toolArgs }
+        : toolArgs;
+
       const headers = {
         "Content-Type": "application/json"
       };
@@ -150,7 +156,7 @@ class MCPClient {
         "tools/call",
         {
           name: toolName,
-          arguments: toolArgs,
+          arguments: requestArgs,
         },
         headers
       );
