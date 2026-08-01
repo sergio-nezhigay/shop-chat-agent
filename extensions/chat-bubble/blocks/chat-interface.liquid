@@ -2,36 +2,53 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
 <div class="shop-chat-interface">
-  <div class="shop-chat-options">
-    <div class="shop-chat-option ai-option ">
-      <button class=" shop-ai-chat-bubble">{{ 'chat.aiChat' | t | default: 'AI Chat' }}</button>
-    </div>
+  <button class="shop-chat-fab-action ai-option shop-ai-chat-bubble">
+    <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round">
+      <path d="M12 2 C12.5 8, 16 11.5, 22 12 C16 12.5, 12.5 16, 12 22 C11.5 16, 8 12.5, 2 12 C8 11.5, 11.5 8, 12 2 Z" />
+    </svg>
+    <span class="shop-chat-fab-action__label shop-chat-fab-action__label--stacked">
+      {{ 'chat.aiChat' | t | default: 'AI Chat' }}
+      <span class="shop-chat-fab-action__label-sub">{{ 'chat.aiChatSubtitle' | t }}</span>
+    </span>
+  </button>
 
-    <div class="shop-chat-option viber-option">
-      <a
-        href="viber://chat?number=+380507025777"
-        target="_blank"
-        class="shop-viber-trigger"
-      >
-        {{ 'chat.viber' | t | default: 'Viber' }}
-      </a>
-    </div>
-    <div class="shop-chat-option telegram-option">
-      <a
-        href="https://t.me/NSergiy"
-        target="_blank"
-        class="shop-telegram-trigger"
-      >
-        {{ 'chat.telegram' | t | default: 'Telegram' }}
-      </a>
-    </div>
-  </div>
+  <a
+    href="https://t.me/NSergiy"
+    target="_blank"
+    class="shop-chat-fab-action telegram-option shop-telegram-trigger"
+  >
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <g transform="translate(-1.3, 1.3)">
+        <path d="M22 2 11 13" />
+        <path d="M22 2 15 22l-4-9-9-4z" />
+      </g>
+    </svg>
+    <span class="shop-chat-fab-action__label">{{ 'chat.telegram' | t | default: 'Telegram' }}</span>
+  </a>
+
+  <a
+    href="viber://chat?number=+380507025777"
+    target="_blank"
+    class="shop-chat-fab-action viber-option shop-viber-trigger"
+  >
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.362 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.338 1.85.573 2.81.7A2 2 0 0 1 22 16.92z" />
+    </svg>
+    <span class="shop-chat-fab-action__label">{{ 'chat.viber' | t | default: 'Viber' }}</span>
+  </a>
+
   <button
     class="shop-chat-main-bubble"
     id="chatToggle"
     aria-label="{{ 'chat.toggle_label' | t | default: 'Toggle chat menu' }}"
   >
-    💬
+    <svg class="shop-chat-fab-toggle__icon shop-chat-fab-toggle__icon--bubble" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M4 12c0-4.4 3.6-8 8-8s8 3.6 8 8-3.6 8-8 8c-1.1 0-2.2-.2-3.1-.7L4 21l1.8-4.3C4.7 15.4 4 13.8 4 12z" />
+    </svg>
+    <svg class="shop-chat-fab-toggle__icon shop-chat-fab-toggle__icon--close" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 5v14" />
+      <path d="M5 12h14" />
+    </svg>
   </button>
   <div class="shop-ai-chat-container">
     <div class="shop-ai-chat-window">

@@ -283,41 +283,36 @@
        */
       setupChatBubbleOptions: function (container) {
         const mainBubble = container.querySelector(".shop-chat-main-bubble");
-        const options = container.querySelector(".shop-chat-options");
         const aiTrigger = container.querySelector(".shop-ai-chat-bubble");
 
-        if (mainBubble && options) {
+        if (mainBubble) {
           mainBubble.addEventListener("click", (e) => {
             e.stopPropagation(); // Prevent event bubbling
-            options.classList.toggle("active");
+            container.classList.toggle("open");
           });
         }
 
-        if (aiTrigger && options) {
+        if (aiTrigger) {
           aiTrigger.addEventListener("click", (e) => {
             e.stopPropagation(); // Prevent event bubbling
-            options.classList.remove("active");
+            container.classList.remove("open");
           });
         }
 
         // Close options when clicking outside
         document.addEventListener("click", (e) => {
-          if (options && options.classList.contains("active")) {
+          if (container.classList.contains("open")) {
             // Check if click is outside the chat interface
             if (!container.contains(e.target)) {
-              options.classList.remove("active");
+              container.classList.remove("open");
             }
           }
         });
 
         // Close options on Escape key
         document.addEventListener("keydown", (e) => {
-          if (
-            e.key === "Escape" &&
-            options &&
-            options.classList.contains("active")
-          ) {
-            options.classList.remove("active");
+          if (e.key === "Escape" && container.classList.contains("open")) {
+            container.classList.remove("open");
           }
         });
       },
