@@ -40,47 +40,63 @@ export function createToolService() {
    * @param {string} conversationId - The conversation ID
    */
   const handleToolSuccess = async (toolUseResponse, toolName, toolUseId, conversationHistory, productsToDisplay, conversationId) => {
+    let contentForHistory = toolUseResponse.content;
+
     // Check if this is a product search result
     if (toolName === AppConfig.tools.productSearchName) {
-      productsToDisplay.push(...processProductSearchResult(toolUseResponse));
+      const allFormattedProducts = formatAllProductsFromResult(toolUseResponse);
+      productsToDisplay.push(...allFormattedProducts.slice(0, AppConfig.tools.maxProductsToDisplay));
+
+      // Give Claude a corrected, deterministic price string for every product
+      // actually present in the raw response, so it never has to convert
+      // minor-unit amounts itself.
+      contentForHistory = appendPriceSummaryBlock(toolUseResponse.content, allFormattedProducts);
     }
 
-    addToolResultToHistory(conversationHistory, toolUseId, toolUseResponse.content, conversationId);
+    addToolResultToHistory(conversationHistory, toolUseId, contentForHistory, conversationId);
   };
 
   /**
-   * Processes product search results
+   * Parses and formats every product from a search_catalog tool response,
+   * with no slicing.
+   * @param {Object} toolUseResponse - The response from the tool
+   * @returns {Array} All formatted products (unsliced)
+   */
+  const formatAllProductsFromResult = (toolUseResponse) => {
+    try {
+      if (!toolUseResponse.content || toolUseResponse.content.length === 0) {
+        return [];
+      }
+
+      const content = toolUseResponse.content[0].text;
+      let responseData;
+      if (typeof content === 'object') {
+        responseData = content;
+      } else if (typeof content === 'string') {
+        responseData = JSON.parse(content);
+      }
+
+      if (responseData?.products && Array.isArray(responseData.products)) {
+        return responseData.products.map(formatProductData);
+      }
+      return [];
+    } catch (e) {
+      console.error("Error parsing product data:", e);
+      return [];
+    }
+  };
+
+  /**
+   * Processes product search results for card display (capped at maxProductsToDisplay)
    * @param {Object} toolUseResponse - The response from the tool
    * @returns {Array} Processed product data
    */
   const processProductSearchResult = (toolUseResponse) => {
     try {
       console.log("Processing product search result");
-      let products = [];
-
-      if (toolUseResponse.content && toolUseResponse.content.length > 0) {
-        const content = toolUseResponse.content[0].text;
-
-        try {
-          let responseData;
-          if (typeof content === 'object') {
-            responseData = content;
-          } else if (typeof content === 'string') {
-            responseData = JSON.parse(content);
-          }
-
-          if (responseData?.products && Array.isArray(responseData.products)) {
-            products = responseData.products
-              .slice(0, AppConfig.tools.maxProductsToDisplay)
-              .map(formatProductData);
-
-            console.log(`Found ${products.length} products to display`);
-          }
-        } catch (e) {
-          console.error("Error parsing product data:", e);
-        }
-      }
-
+      const products = formatAllProductsFromResult(toolUseResponse)
+        .slice(0, AppConfig.tools.maxProductsToDisplay);
+      console.log(`Found ${products.length} products to display`);
       return products;
     } catch (error) {
       console.error("Error processing product search results:", error);
@@ -89,25 +105,75 @@ export function createToolService() {
   };
 
   /**
+   * Formats a money object ({ amount, currency }) into a deterministic
+   * display string. Amounts are minor currency units (e.g. 248300 = 2483.00 UAH).
+   * @param {{amount: number|string, currency: string}} money
+   * @returns {string|null}
+   */
+  const formatMoney = (money) => {
+    if (!money || !money.currency) return null;
+    const amount = Number(money.amount);
+    if (!Number.isFinite(amount)) return null;
+    return `${(amount / 100).toFixed(2)} ${money.currency}`;
+  };
+
+  /**
    * Formats a product data object
    * @param {Object} product - Raw product data
    * @returns {Object} Formatted product data
    */
   const formatProductData = (product) => {
-    const price = product.price_range
-      ? `${product.price_range.currency} ${product.price_range.min}`
-      : (product.variants && product.variants.length > 0
-        ? `${product.variants[0].currency} ${product.variants[0].price}`
-        : 'Price not available');
+    const min = product.price_range?.min ?? product.variants?.[0]?.price;
+    const max = product.price_range?.max;
+
+    const minStr = formatMoney(min);
+    let price = minStr || 'Ціна не вказана';
+    if (minStr && max) {
+      const maxStr = formatMoney(max);
+      if (maxStr && maxStr !== minStr) {
+        price = `від ${minStr}`;
+      }
+    }
 
     return {
-      id: product.product_id || `product-${Math.random().toString(36).substring(7)}`,
+      id: product.id || product.product_id || `product-${Math.random().toString(36).substring(7)}`,
       title: product.title || 'Product',
-      price: price,
-      image_url: product.image_url || '',
-      description: product.description || '',
+      price,
+      image_url: product.media?.[0]?.url || '',
+      description: (typeof product.description === 'string'
+        ? product.description
+        : product.description?.html) || '',
       url: product.url || ''
     };
+  };
+
+  // Must stay byte-identical to the label referenced in
+  // app/prompts/standard-assistant.txt response_rules.
+  const PRICE_SUMMARY_LABEL = 'ФОРМАТОВАНІ ЦІНИ';
+
+  /**
+   * Builds an extra tool_result content block containing correctly-converted,
+   * pre-formatted prices for every product in a search_catalog response.
+   * Appended (not replacing) the raw tool content, so Claude is steered to
+   * copy prices from here verbatim instead of computing them from raw JSON.
+   * @param {Array} originalContent - toolUseResponse.content (raw MCP content blocks)
+   * @param {Array} allFormattedProducts - full (unsliced) formatted product list
+   * @returns {Array} content array to store in conversation history
+   */
+  const appendPriceSummaryBlock = (originalContent, allFormattedProducts) => {
+    if (!allFormattedProducts.length) return originalContent;
+
+    const lines = allFormattedProducts.map(
+      (p) => `- ${p.title}: ${p.price} (id: ${p.id})`
+    );
+
+    const summaryText =
+      `${PRICE_SUMMARY_LABEL} (авторитетне джерело цін для цієї відповіді):\n${lines.join('\n')}`;
+
+    return [
+      ...(Array.isArray(originalContent) ? originalContent : []),
+      { type: 'text', text: summaryText }
+    ];
   };
 
   /**
