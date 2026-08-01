@@ -213,6 +213,29 @@
       },
 
       /**
+       * Briefly shows a floating confirmation toast over the chat window.
+       * Used for actions (like adding to cart from a product card) that
+       * don't otherwise produce any visible assistant message.
+       * @param {string} message - Text to display
+       */
+      showCartToast: function (message) {
+        const { chatWindow } = this.elements;
+        if (!chatWindow) return;
+
+        const toast = document.createElement("div");
+        toast.classList.add("shop-ai-cart-toast");
+        toast.textContent = message;
+        chatWindow.appendChild(toast);
+
+        requestAnimationFrame(() => toast.classList.add("visible"));
+
+        setTimeout(() => {
+          toast.classList.remove("visible");
+          setTimeout(() => toast.remove(), 300);
+        }, 2200);
+      },
+
+      /**
        * Display product results in the chat
        * @param {Array} products - Array of product data objects
        */
@@ -941,6 +964,9 @@
           }
 
           await this.refreshCartIcon();
+          ShopAIChat.UI.showCartToast(
+            window.shopChatConfig?.i18n?.cartAddSuccess || "Додано в кошик!",
+          );
         } catch (error) {
           console.error("Error adding to real cart:", error);
         }
