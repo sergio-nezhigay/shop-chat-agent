@@ -515,6 +515,22 @@
   }
 }
 
+@media (max-width: 1024px) {
+  .shop-chat-fab-action__label {
+    background: var(--primary-color);
+    color: #ffffff;
+    font-weight: 600;
+    border: none;
+    border-radius: 8px;
+    padding: 4px 10px;
+    box-shadow: 0 6px 16px rgba(0, 113, 220, 0.35);
+  }
+
+  .shop-chat-fab-action__label-sub {
+    color: rgba(255, 255, 255, 0.78);
+  }
+}
+
 @media (max-width: 480px) {
   .shop-ai-chat-window {
     position: fixed;
